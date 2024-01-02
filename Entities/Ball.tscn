@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmn6xi1naexio"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://baqbi5bs4s4i0" path="res://Materials/Physics/Wood.tres" id="1_e30t3"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_6wub7"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_sefs5"]
+
+[node name="Ball" type="RigidBody3D"]
+physics_material_override = ExtResource("1_e30t3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("SphereShape3D_6wub7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+mesh = SubResource("SphereMesh_sefs5")

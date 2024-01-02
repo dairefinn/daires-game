@@ -1,0 +1,103 @@
+[gd_scene load_steps=6 format=3 uid="uid://dtrpjipvsgd8d"]
+
+[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor.tscn" id="1_sb5qe"]
+[ext_resource type="PackedScene" uid="uid://cugbesompr743" path="res://Geometry/TileRamp.tscn" id="2_2umks"]
+[ext_resource type="PackedScene" uid="uid://cyl58y3cnmlfn" path="res://Geometry/TileWall.tscn" id="3_gnvc6"]
+[ext_resource type="PackedScene" uid="uid://dmn6xi1naexio" path="res://Entities/Ball.tscn" id="4_6k21b"]
+[ext_resource type="PackedScene" uid="uid://d2ej04ys72xdq" path="res://Entities/Box.tscn" id="5_gn1w2"]
+
+[node name="LevelTesting" type="Node3D"]
+
+[node name="TileFloor" parent="." instance=ExtResource("1_sb5qe")]
+
+[node name="TileFloor2" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+
+[node name="TileFloor3" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="TileFloor4" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="TileFloor5" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
+
+[node name="TileFloor6" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 0)
+
+[node name="TileFloor7" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="TileFloor8" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="TileFloor9" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="TileRamp2" parent="." instance=ExtResource("2_2umks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -4)
+
+[node name="TileRamp" parent="." instance=ExtResource("2_2umks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="TileWall" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -1)
+
+[node name="TileWall2" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+
+[node name="Ball" parent="." instance=ExtResource("4_6k21b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 4, -3)
+
+[node name="Box" parent="." instance=ExtResource("5_gn1w2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 3, -4.4491)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 3, -3)
+
+[node name="TileFloor10" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="TileFloor11" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -4)
+
+[node name="TileWall3" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -5)
+
+[node name="TileWall4" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+
+[node name="TileWall5" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 3, 0, -4)
+
+[node name="TileWall6" parent="." instance=ExtResource("3_gnvc6")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 3, 0, -2)
+
+[node name="TileFloor12" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -2)
+
+[node name="TileFloor13" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+
+[node name="TileFloor14" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
+
+[node name="TileFloor15" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="TileFloor16" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -4)
+
+[node name="TileFloor17" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
+
+[node name="TileFloor18" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0)
+
+[node name="TileFloor19" parent="." instance=ExtResource("1_sb5qe")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-4.37114e-08, -0.866025, 0.5, 1.74393e-16, 0.5, 0.866025, -1, 3.78552e-08, -2.18557e-08, 2.08165e-12, 2.08165e-12, 2.08165e-12)
+light_energy = 0.75
+shadow_enabled = true

@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://mb33h7hpw53g"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://bd31eoo3dpy3v" path="res://Materials/Physics/Concrete.tres" id="1_wcyfq"]
+[ext_resource type="Material" uid="uid://cjcv073l0b771" path="res://Materials/Visual/DevTexture.tres" id="2_dx3xb"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qtkah"]
+size = Vector3(2, 2.08165e-12, 2)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4fogp"]
+material = ExtResource("2_dx3xb")
+
+[node name="TileFloor" type="StaticBody3D"]
+physics_material_override = ExtResource("1_wcyfq")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+visible = false
+shape = SubResource("BoxShape3D_qtkah")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_4fogp")
