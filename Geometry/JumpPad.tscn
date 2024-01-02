@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bmaf0qelko0mk"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_q3b67"]
+inner_radius = 0.8
+
+[node name="JumpPad" type="MeshInstance3D"]
+mesh = SubResource("TorusMesh_q3b67")
