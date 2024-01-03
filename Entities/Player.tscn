@@ -5,6 +5,7 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nwm3c"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ba811"]
+radius = 0.33
 
 [sub_resource type="SphereMesh" id="SphereMesh_77gw6"]
 
@@ -28,7 +29,7 @@ mesh = SubResource("SphereMesh_77gw6")
 skeleton = NodePath("../..")
 
 [node name="Camera3D" type="Camera3D" parent="Body/Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.507)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 2.08165e-12)
 current = true
 fov = 90.0
 
@@ -36,14 +37,14 @@ fov = 90.0
 target_position = Vector3(2.08165e-12, 2.08165e-12, -1)
 
 [node name="Fists" type="Node3D" parent="Body"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.08165e-12, -1, -2.08165e-12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, -0.5)
 
 [node name="FistRight" type="MeshInstance3D" parent="Body/Fists"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2, -1.107)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2.08165e-12, 2.08165e-12)
 mesh = SubResource("BoxMesh_8m7lh")
 skeleton = NodePath("../../Head/Camera3D")
 
 [node name="FistLeft" type="MeshInstance3D" parent="Body/Fists"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2, -1.107)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.08165e-12, 2.08165e-12)
 mesh = SubResource("BoxMesh_8m7lh")
 skeleton = NodePath("../../Head/Camera3D")

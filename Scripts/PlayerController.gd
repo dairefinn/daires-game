@@ -12,6 +12,7 @@ class_name PlayerController
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
 
 @onready var body = $Body;
+@onready var head = $Body/Head;
 @onready var camera = $Body/Head/Camera3D;
 @onready var cameraRay = $Body/Head/Camera3D/RayCast3D;
 
@@ -101,8 +102,8 @@ func performMovementLook(delta: int) -> void:
 	
 		rotate_object_local(Vector3.UP, deg_to_rad(-yaw));
 		
-		# Rotate the camera only up/down
-		camera.rotate_x(deg_to_rad(-pitch));
+		# Rotate the head only up/down
+		head.rotate_x(deg_to_rad(-pitch));
 
 
 # Will lean left and right (eg. when Q and E are pressed)
@@ -162,25 +163,38 @@ func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 		if (dashesUsed > DASH_COUNT):
 			return playerVelocity;
 		
-		# Get the Transform3D indicating where the camera is looking
-		var cameraBasis = camera.get_global_transform().basis;
+		# All translation references we might need
+		var move_z = Input.get_action_strength("back") - Input.get_action_strength("forward");
+		var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
+		var headRotateX = head.rotation.x;
+		var playerRotate = rotation.y
 		
-		# Create a Vector3D from the transform basis
-		var dash_direction = Vector3();
-		dash_direction += cameraBasis.x;
-		dash_direction += cameraBasis.z;
+		# Create a vector to represent the dash movement
+		var vectorDash = Vector3(move_x, 0, move_z);
+		vectorDash = vectorDash.rotated(Vector3.UP, playerRotate);
+		vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX);
+		vectorDash = vectorDash.normalized();
+		vectorDash = vectorDash * DASH_FORCE;
+		vectorDash.y = vectorDash.y / 5;
+		
+		print_debug("Dash direction: ", vectorDash);
+		playerVelocity += vectorDash;
 		
 		# Normalize the values and apply the force in the faced direction
-		dash_direction = dash_direction.normalized();
-		var dash_vector = dash_direction * DASH_FORCE
+		#var dash_vector = dash_direction * DASH_FORCE;
+		#print_debug("Dash direction: ", dash_vector);
 		
 		# Add the force to the players current velocity vector
-		playerVelocity -= dash_vector;
+		#playerVelocity -= dash_vector;
 	
 	return playerVelocity;
 
 
+# Slide if on ground. Ground pound if in air.
 func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
+	if !is_on_floor():
+		return playerVelocity;
+	
 	if Input.is_action_just_pressed("slide"):
 		print_debug("Slide")
 	return playerVelocity;
