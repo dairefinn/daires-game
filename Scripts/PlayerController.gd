@@ -1,32 +1,41 @@
 # Following this tutorial: https://www.youtube.com/watch?v=AW3rT-7J8ag
 extends CharacterBody3D
+class_name PlayerController
 
-@export var speed: float = 5.0;
-@export var acceleration: float = 4.0;
-@export var jump_speed: float = 4.0;
-@export var lean_angle: float = 15;
-@export_range(0, 1) var sensitivity: float = 0.25
+@export var MOVEMENT_SPEED: float = 5.0;
+@export var ACCELERATION: float = 4.0;
+@export var JUMP_SPEED: float = 4.0;
+@export var LEAN_ANGLE: float = 30;
+@export var DASH_FORCE: float = 10.0;
+@export var DASH_COUNT: int = 2;
+@export_range(0, 1) var CAMERA_SENSITIVITY: float = 0.25
+@export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
 
 @onready var body = $Body;
 @onready var camera = $Body/Head/Camera3D;
 @onready var cameraRay = $Body/Head/Camera3D/RayCast3D;
 
 
-var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
 var _mouse_position = Vector2(0, 0);
 var _total_pitch = 0.0
+
 
 enum LeanDirection { LEFT, RIGHT, NONE };
 var leaning: LeanDirection = LeanDirection.NONE;
 
+
+var dashing: bool = false;
+var dashesUsed: int = 0;
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
 
 
 func _physics_process(delta):
-	velocity = performMovementJump(velocity, delta, GRAVITY, jump_speed);
+	velocity = performMovementJump(velocity, delta, GRAVITY, JUMP_SPEED);
 	velocity = performMovementWalk(velocity, delta);
+	velocity = performMovementDash(velocity, delta);
+	velocity = performMovementSlide(velocity, delta);
 	performMovementLook(delta);
 	performMovementLean(delta);
 	
@@ -70,11 +79,11 @@ func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
 	var direction = (transform.basis * input_vector).normalized();
 	
 	if direction:
-		playerVelocity.x = direction.x * speed;
-		playerVelocity.z = direction.z * speed;
+		playerVelocity.x = direction.x * MOVEMENT_SPEED;
+		playerVelocity.z = direction.z * MOVEMENT_SPEED;
 	else: # Without this, the character will continue to slide in the direction they were moving
-		playerVelocity.x = move_toward(playerVelocity.x, 0, speed);
-		playerVelocity.z = move_toward(playerVelocity.z, 0, speed);
+		playerVelocity.x = move_toward(playerVelocity.x, 0, MOVEMENT_SPEED);
+		playerVelocity.z = move_toward(playerVelocity.z, 0, MOVEMENT_SPEED);
 	
 	return playerVelocity;
 
@@ -82,7 +91,7 @@ func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
 func performMovementLook(delta: int) -> void:
 	# Only rotates mouse if the mouse is captured
 	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		_mouse_position *= sensitivity;
+		_mouse_position *= CAMERA_SENSITIVITY;
 		var yaw = _mouse_position.x;
 		var pitch = _mouse_position.y;
 		
@@ -97,26 +106,81 @@ func performMovementLook(delta: int) -> void:
 
 
 # Will lean left and right (eg. when Q and E are pressed)
-# TODO: Make this smoother. Will probably have to rotate a node inside player instead of Player itself.
 func performMovementLean(delta: int) -> void:
+	var targetLeanAngle: float = getTargetLeanAngle(delta, body.rotation.y);
+	var currentRotationRad = body.rotation.z;
+	var targetRotationRad = deg_to_rad(targetLeanAngle);
+	var newRotation = lerp_angle(targetRotationRad, currentRotationRad, 0.5);
+	
+	if (currentRotationRad == targetRotationRad):
+		return;
+	
+	if targetLeanAngle < 0:
+		if leaning != LeanDirection.LEFT:
+			#body.rotate_object_local(Vector3.FORWARD, targetLeanAngle);
+			leaning = LeanDirection.LEFT;
+	elif targetLeanAngle > 0:
+		if leaning != LeanDirection.RIGHT:
+			#body.rotate_object_local(Vector3.FORWARD, targetLeanAngle);
+			leaning = LeanDirection.RIGHT;
+	else:
+		if leaning != LeanDirection.NONE:
+			#body.rotation.z = targetLeanAngle;
+			leaning = LeanDirection.NONE;
+
+	body.rotate_object_local(Vector3.FORWARD, newRotation);
+
+
+# Returns the target lean angle in degrees
+func getTargetLeanAngle(delta: int, currentLeanAngle: float) -> float:
 	var nonePressed: bool = !(Input.is_action_pressed("lean_left") || Input.is_action_pressed("lean_right"));
 	var bothPressed: bool = (Input.is_action_pressed("lean_left") && Input.is_action_pressed("lean_right"));
 	
 	# No lean if none are pressed or both are pressed
 	if nonePressed || bothPressed:
-		if leaning != LeanDirection.NONE:
-			body.rotation.z = 0.0;
-			leaning = LeanDirection.NONE;
-		return;
+		return 0.0;
 	
 	if Input.is_action_pressed("lean_left"):
-		if leaning != LeanDirection.LEFT:
-			print_debug("Lean left");
-			body.rotate_object_local(Vector3.FORWARD, deg_to_rad(-lean_angle));
-			leaning = LeanDirection.LEFT;
+		return -LEAN_ANGLE;
 	
 	if Input.is_action_pressed("lean_right"):
-		if leaning != LeanDirection.RIGHT:
-			print_debug("Lean right");
-			body.rotate_object_local(Vector3.FORWARD, deg_to_rad(lean_angle));
-			leaning = LeanDirection.RIGHT;
+		return LEAN_ANGLE;
+	
+	return 0.0;
+
+
+func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
+	# Reset dash count if on the floor
+	if is_on_floor():
+		dashing = false;
+		dashesUsed = 0;
+	
+	if Input.is_action_just_pressed("dash"):
+		dashing = true;
+		dashesUsed += 1;
+		
+		if (dashesUsed > DASH_COUNT):
+			return playerVelocity;
+		
+		# Get the Transform3D indicating where the camera is looking
+		var cameraBasis = camera.get_global_transform().basis;
+		
+		# Create a Vector3D from the transform basis
+		var dash_direction = Vector3();
+		dash_direction += cameraBasis.x;
+		dash_direction += cameraBasis.z;
+		
+		# Normalize the values and apply the force in the faced direction
+		dash_direction = dash_direction.normalized();
+		var dash_vector = dash_direction * DASH_FORCE
+		
+		# Add the force to the players current velocity vector
+		playerVelocity -= dash_vector;
+	
+	return playerVelocity;
+
+
+func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
+	if Input.is_action_just_pressed("slide"):
+		print_debug("Slide")
+	return playerVelocity;
