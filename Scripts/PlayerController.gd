@@ -6,10 +6,12 @@ class_name PlayerController
 @export var ACCELERATION: float = 4.0;
 @export var JUMP_SPEED: float = 4.0;
 @export var LEAN_ANGLE: float = 30;
-@export var DASH_FORCE: float = 10.0;
+@export var DASH_FORCE: float = 20.0;
 @export var DASH_COUNT: int = 2;
+@export var SLIDE_FORCE: float = 10.0;
 @export_range(0, 1) var CAMERA_SENSITIVITY: float = 0.25
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
+
 
 @onready var body = $Body;
 @onready var head = $Body/Head;
@@ -163,29 +165,21 @@ func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 		if (dashesUsed > DASH_COUNT):
 			return playerVelocity;
 		
-		# All translation references we might need
-		var move_z = Input.get_action_strength("back") - Input.get_action_strength("forward");
-		var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
+		# Some rotations we might need to angle the dash
 		var headRotateX = head.rotation.x;
 		var playerRotate = rotation.y
 		
+		var vectorDash = getMovementVector();
+		
 		# Create a vector to represent the dash movement
-		var vectorDash = Vector3(move_x, 0, move_z);
 		vectorDash = vectorDash.rotated(Vector3.UP, playerRotate);
 		vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX);
 		vectorDash = vectorDash.normalized();
-		vectorDash = vectorDash * DASH_FORCE;
+		vectorDash *= DASH_FORCE;
 		vectorDash.y = vectorDash.y / 5;
 		
 		print_debug("Dash direction: ", vectorDash);
 		playerVelocity += vectorDash;
-		
-		# Normalize the values and apply the force in the faced direction
-		#var dash_vector = dash_direction * DASH_FORCE;
-		#print_debug("Dash direction: ", dash_vector);
-		
-		# Add the force to the players current velocity vector
-		#playerVelocity -= dash_vector;
 	
 	return playerVelocity;
 
@@ -196,5 +190,22 @@ func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
 		return playerVelocity;
 	
 	if Input.is_action_just_pressed("slide"):
-		print_debug("Slide")
+		# Defines the direction the slide should push the player in
+		var vectorSlide = Vector3(0, 0, -1);
+		var playerRotation = rotation.y;
+		vectorSlide = vectorSlide.rotated(Vector3.UP, playerRotation);
+		
+		# Add the slide force to the slide vector
+		vectorSlide *= SLIDE_FORCE;
+		
+		playerVelocity += vectorSlide;
+	
 	return playerVelocity;
+
+
+func getMovementVector() -> Vector3:
+	# All translation references we might need
+	var move_z = Input.get_action_strength("back") - Input.get_action_strength("forward");
+	var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
+	return Vector3(move_x, 0, move_z);
+
