@@ -1,7 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://bmaf0qelko0mk"]
+[gd_scene load_steps=4 format=3 uid="uid://bmaf0qelko0mk"]
+
+[ext_resource type="Script" path="res://Scripts/JumpPad.gd" id="1_xrfeh"]
 
 [sub_resource type="TorusMesh" id="TorusMesh_q3b67"]
 inner_radius = 0.8
 
-[node name="JumpPad" type="MeshInstance3D"]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_523ko"]
+height = 0.2
+radius = 0.966029
+
+[node name="JumpPad" type="Area3D"]
+script = ExtResource("1_xrfeh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("TorusMesh_q3b67")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CylinderShape3D_523ko")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

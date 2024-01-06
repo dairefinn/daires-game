@@ -257,3 +257,9 @@ func getMovementVector() -> Vector3:
 	var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
 	return Vector3(move_x, 0, move_z);
 
+
+func onTouchJumpPad(jumpSpeed: float, multiplier: float) -> void:
+	if !is_on_floor():
+		return;
+	
+	velocity.y += (jumpSpeed * multiplier);
