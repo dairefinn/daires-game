@@ -5,10 +5,12 @@ class_name PlayerController
 @export var MOVEMENT_SPEED: float = 5.0;
 @export var ACCELERATION: float = 4.0;
 @export var JUMP_SPEED: float = 4.0;
-@export var LEAN_ANGLE: float = 30;
+@export var LEAN_ANGLE: float = 30.0;
 @export var DASH_FORCE: float = 20.0;
 @export var DASH_COUNT: int = 2;
-@export var SLIDE_FORCE: float = 10.0;
+@export var SLIDE_FORCE: float = 5.0;
+@export var SLIDE_DURATION: float = 1.0;
+@export var SLIDE_ANGLE: float = 60.0;
 @export_range(0, 1) var CAMERA_SENSITIVITY: float = 0.25
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
 
@@ -29,6 +31,11 @@ var leaning: LeanDirection = LeanDirection.NONE;
 
 var dashing: bool = false;
 var dashesUsed: int = 0;
+
+
+var sliding: bool = false;
+var slideTimer: float = 0.0;
+
 
 func _ready() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
@@ -185,20 +192,61 @@ func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 
 
 # Slide if on ground. Ground pound if in air.
+# TODO: This works but needs tidying up because the logic sucks :). There's probably a better way to do the slide/rotate animations
 func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
-	if !is_on_floor():
+	if sliding:
+		# print_debug("Slide timer: ", slideTimer);
+		if slideTimer < SLIDE_DURATION:
+			var currentRotationRad = body.rotation.x;
+			var targetRotationRad = deg_to_rad(SLIDE_ANGLE);
+			
+			if currentRotationRad != targetRotationRad:
+				var halfSlideDuration = (SLIDE_DURATION / 2);
+				var lerpProgress = 0.0;
+				
+				# For the first half of the dash, rotate to a sliding position
+				if slideTimer <= halfSlideDuration:
+					lerpProgress = (slideTimer / halfSlideDuration);
+				else:
+					targetRotationRad = 0.0;
+					var slideTimerForHalf = (slideTimer - halfSlideDuration);
+					lerpProgress = slideTimerForHalf / halfSlideDuration;
+				
+				var newRotation = lerp_angle(currentRotationRad, targetRotationRad, lerpProgress);
+				var rotationDiff = currentRotationRad - newRotation;
+				body.rotation.x = newRotation;
+				head.rotation.x += rotationDiff;
+			
+			slideTimer += delta
+			
+			# Defines the direction the slide should push the player in
+			var vectorSlide = Vector3(0, 0, -1);
+			var playerRotation = rotation.y;
+			vectorSlide = vectorSlide.rotated(Vector3.UP, playerRotation);
+			
+			# Add the slide force to the slide vector
+			vectorSlide *= SLIDE_FORCE;
+			
+			playerVelocity += vectorSlide;
+		else:
+			print_debug("Slide ending");
+			sliding = false;
+			slideTimer = 0.0;
+			
+			var currentRotationRad = body.rotation.x;
+			#body.rotation.x = 0;
+			#head.rotation.x = 0;
+		
 		return playerVelocity;
 	
 	if Input.is_action_just_pressed("slide"):
-		# Defines the direction the slide should push the player in
-		var vectorSlide = Vector3(0, 0, -1);
-		var playerRotation = rotation.y;
-		vectorSlide = vectorSlide.rotated(Vector3.UP, playerRotation);
+		# Cannot slide in the air
+		if !is_on_floor():
+			print_debug("Cannot slide in the air");
+			return playerVelocity;
 		
-		# Add the slide force to the slide vector
-		vectorSlide *= SLIDE_FORCE;
-		
-		playerVelocity += vectorSlide;
+		print_debug("Started sliding");
+		sliding = true;
 	
 	return playerVelocity;
 
