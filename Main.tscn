@@ -1,57 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://s54fq5gauo35"]
+[gd_scene load_steps=2 format=3 uid="uid://s54fq5gauo35"]
 
-[ext_resource type="PackedScene" uid="uid://dtrpjipvsgd8d" path="res://Levels/LevelTesting.tscn" id="1_ql1qt"]
-[ext_resource type="Script" path="res://Main.gd" id="1_tar14"]
-[ext_resource type="Script" path="res://Scripts/FreeLook.gd" id="2_ghqb2"]
-[ext_resource type="PackedScene" uid="uid://yru61rreocyh" path="res://Entities/Player.tscn" id="3_mxa7v"]
-[ext_resource type="PackedScene" uid="uid://qlaer2kp4qc3" path="res://Interface/PauseMenu.tscn" id="5_bnjvl"]
-[ext_resource type="PackedScene" uid="uid://bmaf0qelko0mk" path="res://Geometry/JumpPad.tscn" id="6_o0apc"]
-[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor.tscn" id="7_7a1wp"]
+[ext_resource type="PackedScene" uid="uid://dp0scn7byhh8d" path="res://Games/MovementShooter.tscn" id="1_f6heh"]
 
 [node name="Main" type="Node3D"]
-script = ExtResource("1_tar14")
 
-[node name="LevelTesting" parent="." instance=ExtResource("1_ql1qt")]
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.866025, -0.353553, 0.353553, -3.09086e-08, 0.707107, 0.707107, -0.5, -0.612373, 0.612372, 3, 4, 2.08165e-12)
-visible = false
-script = ExtResource("2_ghqb2")
-
-[node name="Player" parent="." instance=ExtResource("3_mxa7v")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 2.1037, 0, 0.315849)
-
-[node name="PauseMenu" parent="." instance=ExtResource("5_bnjvl")]
-
-[node name="JumpPad" parent="." instance=ExtResource("6_o0apc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
-
-[node name="TileFloor" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
-
-[node name="TileFloor2" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -2)
-
-[node name="TileFloor3" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
-
-[node name="TileFloor4" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 2)
-
-[node name="TileFloor5" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
-
-[node name="TileFloor6" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 4)
-
-[node name="TileFloor7" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
-
-[node name="TileFloor8" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 4)
-
-[node name="TileFloor9" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="TileFloor10" parent="." instance=ExtResource("7_7a1wp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 4)
+[node name="MovementShooter" parent="." instance=ExtResource("1_f6heh")]

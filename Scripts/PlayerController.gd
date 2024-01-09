@@ -6,7 +6,7 @@ class_name PlayerController
 @export var ACCELERATION: float = 4.0;
 @export var JUMP_SPEED: float = 4.0;
 @export var LEAN_ANGLE: float = 30.0;
-@export var DASH_FORCE: float = 20.0;
+@export var DASH_FORCE: float = 10.0;
 @export var DASH_COUNT: int = 2;
 @export var SLIDE_FORCE: float = 5.0;
 @export var SLIDE_DURATION: float = 1.0;
@@ -180,7 +180,7 @@ func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 		
 		# Create a vector to represent the dash movement
 		vectorDash = vectorDash.rotated(Vector3.UP, playerRotate);
-		vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX);
+		# vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX);
 		vectorDash = vectorDash.normalized();
 		vectorDash *= DASH_FORCE;
 		vectorDash.y = vectorDash.y / 5;
@@ -258,7 +258,7 @@ func getMovementVector() -> Vector3:
 	return Vector3(move_x, 0, move_z);
 
 
-func onTouchJumpPad(jumpSpeed: float, multiplier: float) -> void:
+func onTouchJumpPad(jumpSpeed: float = JUMP_SPEED, multiplier: float = 2) -> void:
 	if !is_on_floor():
 		return;
 	
