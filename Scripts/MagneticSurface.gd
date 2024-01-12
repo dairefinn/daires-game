@@ -13,4 +13,4 @@ func _process(delta):
 
 func _on_body_entered(body: Node3D):
 	if body is PlayerController:
-		body.onTouchJumpPad(body.JUMP_SPEED, 4);
+		pass;
