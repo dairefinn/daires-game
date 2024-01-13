@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://dtrpjipvsgd8d"]
 
-[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor.tscn" id="1_sb5qe"]
-[ext_resource type="PackedScene" uid="uid://cugbesompr743" path="res://Geometry/TileRamp.tscn" id="2_2umks"]
-[ext_resource type="PackedScene" uid="uid://cyl58y3cnmlfn" path="res://Geometry/TileWall.tscn" id="3_gnvc6"]
-[ext_resource type="PackedScene" uid="uid://dmn6xi1naexio" path="res://Entities/Ball.tscn" id="4_6k21b"]
-[ext_resource type="PackedScene" uid="uid://d2ej04ys72xdq" path="res://Entities/Box.tscn" id="5_gn1w2"]
+[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor/TileFloor.tscn" id="1_sb5qe"]
+[ext_resource type="PackedScene" uid="uid://cugbesompr743" path="res://Geometry/TileRamp/TileRamp.tscn" id="2_2umks"]
+[ext_resource type="PackedScene" uid="uid://cyl58y3cnmlfn" path="res://Geometry/TileWall/TileWall.tscn" id="3_gnvc6"]
+[ext_resource type="PackedScene" uid="uid://dmn6xi1naexio" path="res://Entities/Ball/Ball.tscn" id="4_6k21b"]
+[ext_resource type="PackedScene" uid="uid://d2ej04ys72xdq" path="res://Entities/Box/Box.tscn" id="5_gn1w2"]
 
 [node name="LevelTesting" type="Node3D"]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://xjad2osulb1v"]
 
-[ext_resource type="Script" path="res://Scripts/MagneticSurface.gd" id="1_tcr5y"]
+[ext_resource type="Script" path="res://Geometry/MagneticSurface/MagneticSurface.gd" id="1_tcr5y"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_p7sca"]
 size = Vector3(2, 0.1, 2)

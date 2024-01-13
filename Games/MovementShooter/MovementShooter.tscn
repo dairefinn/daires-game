@@ -1,12 +1,12 @@
 [gd_scene load_steps=8 format=3 uid="uid://dp0scn7byhh8d"]
 
-[ext_resource type="Script" path="res://Games/MovementShooter.gd" id="1_fms1b"]
+[ext_resource type="Script" path="res://Games/MovementShooter/MovementShooter.gd" id="1_fms1b"]
 [ext_resource type="PackedScene" uid="uid://dtrpjipvsgd8d" path="res://Levels/LevelTesting.tscn" id="2_ltk35"]
 [ext_resource type="Script" path="res://Scripts/FreeLook.gd" id="3_w3xkd"]
-[ext_resource type="PackedScene" uid="uid://yru61rreocyh" path="res://Entities/Player.tscn" id="4_8rrvn"]
-[ext_resource type="PackedScene" uid="uid://qlaer2kp4qc3" path="res://Interface/PauseMenu.tscn" id="5_i3kym"]
-[ext_resource type="PackedScene" uid="uid://bmaf0qelko0mk" path="res://Geometry/JumpPad.tscn" id="6_5m5xt"]
-[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor.tscn" id="7_6nfl1"]
+[ext_resource type="PackedScene" uid="uid://yru61rreocyh" path="res://Entities/Player/Player.tscn" id="4_8rrvn"]
+[ext_resource type="PackedScene" uid="uid://qlaer2kp4qc3" path="res://Interface/PauseMenu/PauseMenu.tscn" id="5_i3kym"]
+[ext_resource type="PackedScene" uid="uid://bmaf0qelko0mk" path="res://Geometry/JumpPad/JumpPad.tscn" id="6_5m5xt"]
+[ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor/TileFloor.tscn" id="7_6nfl1"]
 
 [node name="MovementShooter" type="Node3D"]
 script = ExtResource("1_fms1b")

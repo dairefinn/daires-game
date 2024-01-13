@@ -1,6 +1,6 @@
 # Following this tutorial: https://www.youtube.com/watch?v=AW3rT-7J8ag
 extends CharacterBody3D
-class_name PlayerController
+class_name Player
 
 @export var MOVEMENT_SPEED: float = 5.0;
 @export var ACCELERATION: float = 4.0;

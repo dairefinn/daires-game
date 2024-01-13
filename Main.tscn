@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://s54fq5gauo35"]
 
-[ext_resource type="PackedScene" uid="uid://dp0scn7byhh8d" path="res://Games/MovementShooter.tscn" id="1_f6heh"]
+[ext_resource type="PackedScene" uid="uid://dp0scn7byhh8d" path="res://Games/MovementShooter/MovementShooter.tscn" id="1_f6heh"]
 
 [node name="Main" type="Node3D"]
 
