@@ -1,10 +1,22 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtrpjipvsgd8d"]
+[gd_scene load_steps=10 format=3 uid="uid://dtrpjipvsgd8d"]
 
 [ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor/TileFloor.tscn" id="1_sb5qe"]
 [ext_resource type="PackedScene" uid="uid://cugbesompr743" path="res://Geometry/TileRamp/TileRamp.tscn" id="2_2umks"]
 [ext_resource type="PackedScene" uid="uid://cyl58y3cnmlfn" path="res://Geometry/TileWall/TileWall.tscn" id="3_gnvc6"]
 [ext_resource type="PackedScene" uid="uid://dmn6xi1naexio" path="res://Entities/Ball/Ball.tscn" id="4_6k21b"]
 [ext_resource type="PackedScene" uid="uid://d2ej04ys72xdq" path="res://Entities/Box/Box.tscn" id="5_gn1w2"]
+[ext_resource type="Texture2D" uid="uid://dl2af5flcl2jc" path="res://Materials/AllSkyFree_Skyboxes/AnotherPlanet.png" id="6_ukat7"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_h5d4k"]
+panorama = ExtResource("6_ukat7")
+
+[sub_resource type="Sky" id="Sky_vrpg3"]
+sky_material = SubResource("PanoramaSkyMaterial_h5d4k")
+
+[sub_resource type="Environment" id="Environment_mno7d"]
+background_mode = 2
+sky = SubResource("Sky_vrpg3")
+sky_rotation = Vector3(3.14159, 3.48787e-16, 3.48787e-16)
 
 [node name="LevelTesting" type="Node3D"]
 
@@ -101,3 +113,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
 transform = Transform3D(-4.37114e-08, -0.866025, 0.5, 1.74393e-16, 0.5, 0.866025, -1, 3.78552e-08, -2.18557e-08, 2.08165e-12, 2.08165e-12, 2.08165e-12)
 light_energy = 0.75
 shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_mno7d")
