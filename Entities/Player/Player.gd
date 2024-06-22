@@ -108,10 +108,8 @@ func equipWeapon(weapon: Weapon) -> void:
 	weapon.get_parent().remove_child(weapon); # Remove from world
 	fistRight.add_child(weapon); # Add to hand
 	weapon.freeze = true; # Stop physics
-	# Move gun to a better position
-	weapon.position.x = 0;
-	weapon.position.y = 0; 
-	weapon.position.z = -0.1;
+	weapon.position = Vector3(0, 0, -0.1); # Position gun just in front of hand
+	weapon.rotation = Vector3(0, 0, 0); # Reset rotation
 	print_debug("Equipped weapon after remove: " + equippedWeapon.name);
 
 func performActionDrop(delta: float) -> void:
@@ -126,8 +124,14 @@ func dropWeapon() -> void:
 		return;
 	
 	equippedWeapon.freeze = false; # Activate physics
+	var currentPosition = equippedWeapon.global_position;
+	print_debug("Current position: ", currentPosition.x, ", ", currentPosition.y, ", ", currentPosition.z);
+	var currentRotation = equippedWeapon.global_rotation;
+	print_debug("Current rotation: ", currentRotation.x, ", ", currentRotation.y, ", ", currentRotation.z);
 	fistRight.remove_child(equippedWeapon);
 	get_parent().add_child(equippedWeapon); # Add weapon to world
+	equippedWeapon.position = currentPosition;
+	equippedWeapon.rotation = currentRotation;
 	equippedWeapon = null; # Clear equipped weapon
 
 
