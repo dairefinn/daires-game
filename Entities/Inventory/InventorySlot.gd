@@ -1,5 +1,5 @@
-extends Node3D
-class_name Equipable
+extends Node
+class_name InventorySlot;
 
 
 # Called when the node enters the scene tree for the first time.

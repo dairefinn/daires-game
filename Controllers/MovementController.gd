@@ -16,31 +16,30 @@ class_name MovementController;
 @export var SLIDE_DURATION: float = 1.0;
 @export var SLIDE_ANGLE: float = 60.0;
 
-
 enum LeanDirection { LEFT, RIGHT, NONE };
 var leaning: LeanDirection = LeanDirection.NONE;
-
 
 var dashing: bool = false;
 var dashesUsed: int = 0;
 
-
 var sliding: bool = false;
 var slideTimer: float = 0.0;
 
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
+var _mouse_position = Vector2(0, 0);
+var _total_pitch = 0.0;
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+func _init():
+	# Capture the mouse inside of the window while controlling the camera
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
+	print_debug("Capturing mouse")
 
 
-func setPlayerEntity(player):
-	playerEntity = player;
+func process_input(event: InputEvent) -> void:
+	# Receives mouse motion
+	if event is InputEventMouseMotion:
+		_mouse_position = event.relative;
+		# print_debug("Mouse X: ", _mouse_position.x, " | Mouse Y: ", _mouse_position.y);
 
 
 # Will either apply gravity or jump if applicable
@@ -78,15 +77,17 @@ func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
 func performMovementLook(delta: int) -> void:
 	# Only rotates mouse if the mouse is captured
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
+		print_debug("Mouse is not captured");
 		return;
 	
-	playerEntity._mouse_position *= CAMERA_SENSITIVITY;
-	var yaw = playerEntity._mouse_position.x;
-	var pitch = playerEntity._mouse_position.y;
+	print_debug("Captured")
+	_mouse_position *= CAMERA_SENSITIVITY;
+	var yaw = _mouse_position.x;
+	var pitch = _mouse_position.y;
 	
 	# Prevents looking up/down too far
-	pitch = clamp(pitch, -90 - playerEntity._total_pitch, 90 - playerEntity._total_pitch);
-	playerEntity._total_pitch += pitch;
+	pitch = clamp(pitch, -90 - _total_pitch, 90 - _total_pitch);
+	_total_pitch += pitch;
 	
 	playerEntity.rotate_object_local(Vector3.UP, deg_to_rad(-yaw));
 	
@@ -246,3 +247,15 @@ func processMovement(delta) -> void:
 	playerEntity.velocity = performMovementSlide(playerEntity.velocity, delta);
 	performMovementLook(delta);
 	performMovementLean(delta);
+	
+	playerEntity.move_and_slide();
+	processCollisions();
+
+
+# Makes it so that you can push objects around
+func processCollisions() -> void:
+	for col_idx in playerEntity.get_slide_collision_count():
+		var col = playerEntity.get_slide_collision(col_idx)
+		if col.get_collider() is RigidBody3D:
+			col.get_collider().apply_central_impulse(-col.get_normal() * 0.3)
+			col.get_collider().apply_impulse(-col.get_normal() * 0.01, col.get_position());
