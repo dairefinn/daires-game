@@ -80,7 +80,6 @@ func performMovementLook(delta: int) -> void:
 		print_debug("Mouse is not captured");
 		return;
 	
-	print_debug("Captured")
 	_mouse_position *= CAMERA_SENSITIVITY;
 	var yaw = _mouse_position.x;
 	var pitch = _mouse_position.y;

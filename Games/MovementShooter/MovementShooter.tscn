@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dp0scn7byhh8d"]
+[gd_scene load_steps=10 format=3 uid="uid://dp0scn7byhh8d"]
 
 [ext_resource type="Script" path="res://Games/MovementShooter/MovementShooter.gd" id="1_fms1b"]
 [ext_resource type="PackedScene" uid="uid://dtrpjipvsgd8d" path="res://Levels/LevelTesting.tscn" id="2_ltk35"]
@@ -7,7 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://qlaer2kp4qc3" path="res://Interface/PauseMenu/PauseMenu.tscn" id="5_i3kym"]
 [ext_resource type="PackedScene" uid="uid://bmaf0qelko0mk" path="res://Geometry/JumpPad/JumpPad.tscn" id="6_5m5xt"]
 [ext_resource type="PackedScene" uid="uid://mb33h7hpw53g" path="res://Geometry/TileFloor/TileFloor.tscn" id="7_6nfl1"]
-[ext_resource type="PackedScene" uid="uid://b40cg84d5p6ar" path="res://Entities/Weapon/Pistol/Pistol.tscn" id="8_fd7cq"]
+[ext_resource type="PackedScene" uid="uid://b40cg84d5p6ar" path="res://Entities/Weapons/Pistol/Pistol.tscn" id="8_fd7cq"]
+[ext_resource type="PackedScene" uid="uid://csmfx71abppe" path="res://Entities/Weapons/Sword/WeaponSword.tscn" id="9_3fauc"]
 
 [node name="MovementShooter" type="Node3D"]
 script = ExtResource("1_fms1b")
@@ -60,5 +61,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 4)
 [node name="Pistol" parent="." instance=ExtResource("8_fd7cq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.502199, 1.32512, 1.40384)
 
+[node name="WeaponSword" parent="." instance=ExtResource("9_3fauc")]
+transform = Transform3D(0.707107, 0.353553, -0.612372, 0, 0.866025, 0.5, 0.707107, -0.353553, 0.612372, -4, 1, 2)
+
+[node name="WeaponSword2" parent="." instance=ExtResource("9_3fauc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.22512, 0.89525, 2.93445)
+
 [node name="Pistol2" parent="." instance=ExtResource("8_fd7cq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.35905, 1.15261, 1.64176)
+transform = Transform3D(1, 0, 0, 0, 0.866025, -0.5, 0, 0.5, 0.866025, -1.99643, 1.51441, 1.01474)

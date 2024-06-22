@@ -20,6 +20,5 @@ func _on_body_entered(body: Node):#
 			# TODO: Where tf did jump speed come from previously?
 			# body.velocity.y += (body.movementController.jumpSpeed * 4);
 			body.velocity.y += 8;
-	elif body is WeaponPistol:
-		var pistol: WeaponPistol = body;
+	elif body is Equipable:
 		body.linear_velocity.y += 8;

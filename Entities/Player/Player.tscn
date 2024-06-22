@@ -42,10 +42,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, -0.5)
 
 [node name="HandRight" type="MeshInstance3D" parent="Body/Hands"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2.08165e-12, 2.08165e-12)
+transparency = 1.0
 mesh = SubResource("BoxMesh_8m7lh")
 skeleton = NodePath("../../Head/Camera3D")
 
 [node name="HandLeft" type="MeshInstance3D" parent="Body/Hands"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.08165e-12, 2.08165e-12)
+transparency = 1.0
 mesh = SubResource("BoxMesh_8m7lh")
 skeleton = NodePath("../../Head/Camera3D")

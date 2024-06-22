@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://b40cg84d5p6ar"]
+[gd_scene load_steps=6 format=3 uid="uid://b40cg84d5p6ar"]
 
-[ext_resource type="Script" path="res://Entities/Weapon/Pistol/Pistol.gd" id="1_fxp5d"]
+[ext_resource type="Script" path="res://Entities/Weapons/Pistol/Pistol.gd" id="1_fxp5d"]
+[ext_resource type="PhysicsMaterial" uid="uid://dqmxp72f0ht4y" path="res://Materials/Physics/Steel.tres" id="1_yaxht"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_yramh"]
 size = Vector3(2, 3, 4)
@@ -14,6 +15,8 @@ size = Vector3(1, 1, 3)
 [node name="Pistol" type="RigidBody3D"]
 collision_layer = 3
 collision_mask = 3
+mass = 500.0
+physics_material_override = ExtResource("1_yaxht")
 script = ExtResource("1_fxp5d")
 
 [node name="Hitbox" type="CollisionShape3D" parent="."]

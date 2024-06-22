@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3 uid="uid://csmfx71abppe"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://dqmxp72f0ht4y" path="res://Materials/Physics/Steel.tres" id="1_7cx5l"]
+[ext_resource type="Script" path="res://Entities/Weapons/Sword/WeaponSword.gd" id="1_f5os0"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_71p8j"]
+radius = 0.75
+height = 12.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_a5kyc"]
+size = Vector3(0.25, 2, 0.5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cc7bi"]
+top_radius = 0.75
+bottom_radius = 0.75
+height = 0.25
+
+[sub_resource type="PrismMesh" id="PrismMesh_kimfs"]
+size = Vector3(0.1, 10, 1)
+
+[node name="WeaponSword" type="RigidBody3D"]
+collision_layer = 3
+collision_mask = 3
+mass = 2.0
+physics_material_override = ExtResource("1_7cx5l")
+center_of_mass_mode = 1
+script = ExtResource("1_f5os0")
+
+[node name="Hitbox" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+shape = SubResource("CapsuleShape3D_71p8j")
+
+[node name="Handle" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+mesh = SubResource("BoxMesh_a5kyc")
+
+[node name="Guard" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4, 0)
+mesh = SubResource("CylinderMesh_cc7bi")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("PrismMesh_kimfs")
