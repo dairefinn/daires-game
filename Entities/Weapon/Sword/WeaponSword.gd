@@ -1,5 +1,5 @@
-extends Equipable
-class_name Weapon
+extends Weapon
+class_name WeaponSword;
 
 
 # Called when the node enters the scene tree for the first time.

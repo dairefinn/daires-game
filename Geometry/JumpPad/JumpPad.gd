@@ -13,4 +13,13 @@ func _process(delta):
 
 func _on_body_entered(body: Node3D):
 	if body is Player:
-		body.onTouchJumpPad(body.JUMP_SPEED, 4);
+		if body.is_on_floor():
+			# TODO: Where tf did jump speed come from previously?
+			# body.velocity.y += (body.movementController.jumpSpeed * 4);
+			var jumpSpeed = 2;
+			body.velocity.y += (jumpSpeed * 4);
+	# TODO: Make weapon go boing boing
+	#elif body is Equipable:
+		#if body.is_on_floor():
+			#var jumpSpeed = 4;
+			#body.velocity.y += (jumpSpeed * 4);
