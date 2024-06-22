@@ -13,12 +13,16 @@ class_name Player
 @export var SLIDE_ANGLE: float = 60.0;
 @export_range(0, 1) var CAMERA_SENSITIVITY: float = 0.25
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
+@export var equippedWeapon: Weapon = null;
 
 
 @onready var body = $Body;
 @onready var head = $Body/Head;
 @onready var camera = $Body/Head/Camera3D;
 @onready var cameraRay = $Body/Head/Camera3D/RayCast3D;
+@onready var fists = $Body/Fists;
+@onready var fistLeft = $Body/Fists/FistLeft;
+@onready var fistRight = $Body/Fists/FistRight;
 
 
 var _mouse_position = Vector2(0, 0);
@@ -49,6 +53,9 @@ func _physics_process(delta):
 	performMovementLook(delta);
 	performMovementLean(delta);
 	
+	performActionInteract(delta);
+	performActionDrop(delta)
+	
 	move_and_slide();
 	
 	processCollisions();
@@ -67,6 +74,61 @@ func processCollisions() -> void:
 		if col.get_collider() is RigidBody3D:
 			col.get_collider().apply_central_impulse(-col.get_normal() * 0.3)
 			col.get_collider().apply_impulse(-col.get_normal() * 0.01, col.get_position());
+
+
+# Will either apply gravity or jump if applicable
+func performActionInteract(delta: float) -> void:
+	# If interact was pressed, get what the player was looking at and do something if possible
+	if Input.is_action_just_pressed("interact"):
+		print_debug("Interact was pressed")
+		# cameraRay.enabled = true; # Enables the ray, this (probably) improves performance?
+		# cameraRay.force_raycast_update() # Might need to do this to force an update since it's disabled?
+		if cameraRay.is_colliding():
+			var collidingWith: Object = cameraRay.get_collider();
+			print_debug("First object colliding with: " + collidingWith.name);
+			
+			if collidingWith is Weapon:
+				print_debug(collidingWith.name + " is a Weapon");
+				equipWeapon(collidingWith);
+
+
+func equipWeapon(weapon: Weapon) -> void:
+	if (equippedWeapon != null):
+		print_debug("Cannot equip a weapon as you already have one equipped");
+		return;
+	
+	print_debug("Equipping a " + weapon.name);
+	if (equippedWeapon != null):
+		print_debug("Equipped weapon before pickup: " + equippedWeapon.name);
+	else:
+		print_debug("Does not have a weapon equipped currently");
+	
+	equippedWeapon = weapon; # Add to hands
+	print_debug("Equipped weapon after pickup: " + equippedWeapon.name);
+	weapon.get_parent().remove_child(weapon); # Remove from world
+	fistRight.add_child(weapon); # Add to hand
+	weapon.freeze = true; # Stop physics
+	# Move gun to a better position
+	weapon.position.x = 0;
+	weapon.position.y = 0; 
+	weapon.position.z = -0.1;
+	print_debug("Equipped weapon after remove: " + equippedWeapon.name);
+
+func performActionDrop(delta: float) -> void:
+	# If drop was pressed, attempt to drop whatever you're holding
+	if Input.is_action_just_pressed("drop"):
+		dropWeapon();
+
+
+func dropWeapon() -> void:
+	if (equippedWeapon == null):
+		print_debug("Cannot drop weapon - You do not have a weapon equipped");
+		return;
+	
+	equippedWeapon.freeze = false; # Activate physics
+	fistRight.remove_child(equippedWeapon);
+	get_parent().add_child(equippedWeapon); # Add weapon to world
+	equippedWeapon = null; # Clear equipped weapon
 
 
 # Will either apply gravity or jump if applicable

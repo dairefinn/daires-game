@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://b40cg84d5p6ar"]
+
+[ext_resource type="Script" path="res://Entities/Weapon/Pistol/Pistol.gd" id="1_fxp5d"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yramh"]
+size = Vector3(2, 3, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_gauef"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4j6ms"]
+size = Vector3(1, 1, 3)
+
+[node name="Pistol" type="RigidBody3D"]
+script = ExtResource("1_fxp5d")
+
+[node name="Hitbox" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+shape = SubResource("BoxShape3D_yramh")
+
+[node name="Grip" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("BoxMesh_gauef")
+skeleton = NodePath("../..")
+
+[node name="Barrel" type="MeshInstance3D" parent="Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_4j6ms")
+skeleton = NodePath("../..")
