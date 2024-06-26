@@ -20,5 +20,5 @@ func _on_body_entered(body: Node):#
 			# TODO: Where tf did jump speed come from previously?
 			# body.velocity.y += (body.movementController.jumpSpeed * 4);
 			body.velocity.y += 8;
-	elif body is Equipable:
+	elif body is ItemEquipable:
 		body.linear_velocity.y += 8;

@@ -1,5 +1,5 @@
-extends PickupableItem
-class_name Equipable
+extends ItemPickupable
+class_name ItemEquipable
 
 
 var isHighlighted: bool = false;

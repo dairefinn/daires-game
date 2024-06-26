@@ -1,4 +1,4 @@
-extends Weapon
+extends WeaponMelee
 class_name WeaponSword;
 
 

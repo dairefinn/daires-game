@@ -1,4 +1,4 @@
-extends Equipable
+extends ItemEquipable
 class_name Weapon
 
 
@@ -9,4 +9,14 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	pass
+
+
+func attackPrimary():
+	print_debug("[Weapon] attackPrimary")
+	pass
+
+
+func attackSecondary():
+	print_debug("[Weapon] attackSecondary")
 	pass

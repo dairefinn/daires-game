@@ -1,5 +1,5 @@
-extends WeaponFirearm
-class_name WeaponPistol
+extends Weapon
+class_name WeaponMelee;
 
 
 # Called when the node enters the scene tree for the first time.
@@ -9,9 +9,15 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	print_debug("[Weapon] secondaryAttack")
 	pass
 
 
 func attackPrimary():
-	super(); # Calls primaryAttack in the Weapon class incase we want to do some common function for all weapon attacks with every weapon
-	
+	super();
+	print_debug("[WeaponMelee] attackPrimary")
+
+
+func attackSecondary():
+	super();
+	print_debug("[WeaponMelee] attackSecondary")

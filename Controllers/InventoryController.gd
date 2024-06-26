@@ -3,8 +3,8 @@ class_name InventoryController;
 
 
 @export var playerEntity: Player = null;
-@export var equippedItemLeft: Equipable = null;
-@export var equippedItemRight: Equipable = null;
+@export var equippedItemLeft: ItemEquipable = null;
+@export var equippedItemRight: ItemEquipable = null;
 @export var handOffset: Vector3 = Vector3(0, 0, -0.1);
 
 var slots: Array[InventorySlot] = [];
@@ -13,6 +13,11 @@ var slots: Array[InventorySlot] = [];
 func processUpdates(delta):
 	performActionInteract(delta);
 	performActionDrop(delta)
+
+
+# TODO: This should be a bit smarter probably. Idk if I want to utilize equippedItemLeft or just have one weapon slot. Versatility good so maybe later
+func getEquippedItem():
+	return equippedItemRight;
 
 
 # Get what the player was looking at and do something if possible
@@ -29,11 +34,11 @@ func performActionInteract(delta: float) -> void:
 	var collidingWith: Object = playerEntity.cameraRay.get_collider();
 	print_debug("First object colliding with: " + collidingWith.name);
 	
-	if collidingWith is Equipable:
+	if collidingWith is ItemEquipable:
 		equipItem(collidingWith);
 
 
-func equipItem(equipable: Equipable) -> void:
+func equipItem(equipable: ItemEquipable) -> void:
 	if (equippedItemRight != null):
 		print_debug("Cannot equip a equipable as you already have one equipped");
 		return;

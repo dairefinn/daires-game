@@ -34,6 +34,11 @@ func _physics_process(delta):
 
 func _input(event: InputEvent) -> void:
 	movementController.process_input(event);
+	if Input.is_action_pressed("mouseLeft"):
+		var equippedItem = inventoryController.getEquippedItem();
+		if (equippedItem != null && equippedItem is Weapon):
+			var equippedWeapon = equippedItem as Weapon;
+			equippedWeapon.attackPrimary();
 
 
 # TODO: Make objects highlight a bit when they are colliding with the camera ray (to indicate that they can be used)
@@ -44,5 +49,5 @@ func markItemAsHighlighted(delta) -> void:
 	
 	var collidingWith: Object = cameraRay.get_collider();
 	print_debug("First object colliding with: " + collidingWith.name);
-	if collidingWith is Equipable:
+	if collidingWith is ItemEquipable:
 		highlighted = collidingWith;

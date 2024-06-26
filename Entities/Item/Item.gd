@@ -1,5 +1,5 @@
 extends Node
-class_name PickupableItem;
+class_name Item;
 
 
 # Called when the node enters the scene tree for the first time.
