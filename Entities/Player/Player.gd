@@ -29,7 +29,7 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	movementController.processMovement(delta);
-	inventoryController.processUpdates(delta);
+	inventoryController.processUpdates();
 
 
 func _input(event: InputEvent) -> void:
@@ -43,7 +43,7 @@ func _input(event: InputEvent) -> void:
 
 # TODO: Make objects highlight a bit when they are colliding with the camera ray (to indicate that they can be used)
 var highlighted: Object = null;
-func markItemAsHighlighted(delta) -> void:
+func markItemAsHighlighted() -> void:
 	if !cameraRay.is_colliding():
 		return;
 	

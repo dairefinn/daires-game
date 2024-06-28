@@ -1,12 +1,18 @@
 extends Node3D
+class_name GameMovementShooter;
 
 
 @onready var pauseMenu = $PauseMenu;
+@onready var movementShooter = $MovementShooter;
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pauseMenu.hide();
+
+
+func _on_add_projectile(projectile: Node3D):
+		add_child(projectile);
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

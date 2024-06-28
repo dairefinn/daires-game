@@ -12,12 +12,13 @@ size = Vector3(1, 2, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_4j6ms"]
 size = Vector3(1, 1, 3)
 
-[node name="Pistol" type="RigidBody3D"]
+[node name="Pistol" type="RigidBody3D" node_paths=PackedStringArray("bulletEmitter")]
 collision_layer = 3
 collision_mask = 3
 mass = 500.0
 physics_material_override = ExtResource("1_yaxht")
 script = ExtResource("1_fxp5d")
+bulletEmitter = NodePath("Hitbox/BulletEmitter")
 
 [node name="Hitbox" type="CollisionShape3D" parent="."]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)

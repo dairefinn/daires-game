@@ -3,16 +3,16 @@ class_name InventoryController;
 
 
 @export var playerEntity: Player = null;
-@export var equippedItemLeft: ItemEquipable = null;
-@export var equippedItemRight: ItemEquipable = null;
+@export var equippedItemLeft: ItemPickupable = null;
+@export var equippedItemRight: ItemPickupable = null;
 @export var handOffset: Vector3 = Vector3(0, 0, -0.1);
 
 var slots: Array[InventorySlot] = [];
 
 
-func processUpdates(delta):
-	performActionInteract(delta);
-	performActionDrop(delta)
+func processUpdates():
+	performActionInteract();
+	performActionDrop()
 
 
 # TODO: This should be a bit smarter probably. Idk if I want to utilize equippedItemLeft or just have one weapon slot. Versatility good so maybe later
@@ -21,7 +21,7 @@ func getEquippedItem():
 
 
 # Get what the player was looking at and do something if possible
-func performActionInteract(delta: float) -> void:
+func performActionInteract() -> void:
 	# Wait for interaction
 	if !Input.is_action_just_pressed("interact"):
 		return;
@@ -34,11 +34,11 @@ func performActionInteract(delta: float) -> void:
 	var collidingWith: Object = playerEntity.cameraRay.get_collider();
 	print_debug("First object colliding with: " + collidingWith.name);
 	
-	if collidingWith is ItemEquipable:
+	if collidingWith is ItemPickupable:
 		equipItem(collidingWith);
 
 
-func equipItem(equipable: ItemEquipable) -> void:
+func equipItem(equipable: ItemPickupable) -> void:
 	if (equippedItemRight != null):
 		print_debug("Cannot equip a equipable as you already have one equipped");
 		return;
@@ -54,7 +54,7 @@ func equipItem(equipable: ItemEquipable) -> void:
 
 
 # If drop was pressed, attempt to drop whatever you're holding
-func performActionDrop(delta: float) -> void:
+func performActionDrop() -> void:
 	if !Input.is_action_just_pressed("drop"):
 		return;
 	

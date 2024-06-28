@@ -2,16 +2,5 @@ extends WeaponFirearm
 class_name WeaponPistol
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
-
 func attackPrimary():
 	super(); # Calls primaryAttack in the Weapon class incase we want to do some common function for all weapon attacks with every weapon
-	
