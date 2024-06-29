@@ -34,11 +34,16 @@ func _physics_process(delta):
 
 func _input(event: InputEvent) -> void:
 	movementController.process_input(event);
+	
+	var equippedItem = inventoryController.getEquippedItem();
 	if Input.is_action_just_pressed("mouseLeft"):
-		var equippedItem = inventoryController.getEquippedItem();
 		if (equippedItem != null && equippedItem is Weapon):
 			var equippedWeapon = equippedItem as Weapon;
 			equippedWeapon.attackPrimary();
+	if Input.is_action_just_pressed("reload"):
+		if (equippedItem != null && equippedItem is WeaponFirearm):
+			var equippedWeapon = equippedItem as WeaponFirearm;
+			equippedWeapon.reload();
 
 
 # TODO: Make objects highlight a bit when they are colliding with the camera ray (to indicate that they can be used)

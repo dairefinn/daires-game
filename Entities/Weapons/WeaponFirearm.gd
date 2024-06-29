@@ -5,12 +5,13 @@ class_name WeaponFirearm;
 var resourceBullet = load("res://Entities/Weapons/Projectile/Bullet.tscn");
 @export var bulletEmitter: Node3D;
 
-var ammoLeft = 10;
+var BASE_AMMO_CAPACITY = 10;
+var ammoLeft = 0;
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	ammoLeft = BASE_AMMO_CAPACITY;
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -46,3 +47,8 @@ func spawnBullet(_bulletEmitter: Node3D) -> void:
 	newBullet.linear_velocity = Vector3(0, 0, -50).rotated(Vector3.UP, bulletRotate);
 	
 	ammoLeft -= 1;
+
+
+func reload() -> void:
+	print_debug("Reloading your weapon");
+	ammoLeft = BASE_AMMO_CAPACITY;
