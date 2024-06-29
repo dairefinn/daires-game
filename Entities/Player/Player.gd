@@ -34,7 +34,7 @@ func _physics_process(delta):
 
 func _input(event: InputEvent) -> void:
 	movementController.process_input(event);
-	if Input.is_action_pressed("mouseLeft"):
+	if Input.is_action_just_pressed("mouseLeft"):
 		var equippedItem = inventoryController.getEquippedItem();
 		if (equippedItem != null && equippedItem is Weapon):
 			var equippedWeapon = equippedItem as Weapon;

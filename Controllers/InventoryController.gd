@@ -35,12 +35,16 @@ func performActionInteract() -> void:
 	print_debug("First object colliding with: " + collidingWith.name);
 	
 	if collidingWith is ItemPickupable:
-		equipItem(collidingWith);
+		tryEquipItem(collidingWith);
 
 
-func equipItem(equipable: ItemPickupable) -> void:
+func tryEquipItem(equipable: ItemPickupable) -> void:
 	if (equippedItemRight != null):
-		print_debug("Cannot equip a equipable as you already have one equipped");
+		print_debug("Cannot pick up this item as you already have one equipped");
+		return;
+	
+	if (equipable.mass >= 50):
+		print_debug("Cannot pick up this item as it is too heavy");
 		return;
 	
 	print_debug("Equipping a " + equipable.name);
