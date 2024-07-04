@@ -4,14 +4,15 @@ class_name MovementController;
 @export var playerEntity: Player = null;
 
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
-@export_range(0, 1) var CAMERA_SENSITIVITY: float = 0.25
+@export_range(0, 1) var CAMERA_SENSITIVITY: float = 10;
 @export var MOVEMENT_SPEED: float = 5.0;
-@export var ACCELERATION: float = 4.0;
+@export var ACCELERATION: float = 20.0;
 @export var JUMP_SPEED: float = 4.0;
 @export var LEAN_ANGLE: float = 30.0;
 @export var DASH_FORCE: float = 10.0;
 @export var DASH_COUNT: int = 2;
-@export var SLIDE_FORCE: float = 5.0;
+@export var DASH_Y_REDUCTION_FACTOR = 5;
+@export var SLIDE_FORCE: float = 0.5;
 @export var SLIDE_DURATION: float = 1.0;
 @export var SLIDE_ANGLE: float = 60.0;
 
@@ -21,6 +22,7 @@ var leaning: LeanDirection = LeanDirection.NONE;
 var dashing: bool = false;
 var dashesUsed: int = 0;
 
+const VECTOR_SLIDE_DIRECTION = Vector3(0, 0, -1) # Defines the base direction for sliding
 var sliding: bool = false;
 var slideTimer: float = 0.0;
 
@@ -35,19 +37,12 @@ func _init():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
 	print_debug("Capturing mouse")
 
-func _process(delta):
-	# Update the last jump press timer if it's valid
-	if lastJumpPress >= 0:
-		lastJumpPress += delta
-
-func process_input(event: InputEvent) -> void:
+func process_input(event: InputEvent):
 	# Receives mouse motion
 	if event is InputEventMouseMotion:
 		_mouse_position = event.relative;
-		# print_debug("Mouse X: ", _mouse_position.x, " | Mouse Y: ", _mouse_position.y);
 
-# Will either apply gravity or jump if applicable
-func performMovementJump(playerVelocity: Vector3, delta: float, gravity: float, jumpSpeed: float) -> Vector3:
+func performMovementJump(playerVelocity: Vector3, delta: float, gravity: float, jumpSpeed: float):
 	# Update jump press if jump action is just pressed
 	if Input.is_action_just_pressed("jump"):
 		lastJumpPress = 0
@@ -64,73 +59,78 @@ func performMovementJump(playerVelocity: Vector3, delta: float, gravity: float, 
 
 	return playerVelocity
 
-# Will move laterally if an appropriate input is pressed
-func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
-	# Get the input direction and handle the movement/deceleration.
-	var input_dir = Input.get_vector("left", "right", "forward", "back");
-	var input_vector = Vector3(input_dir.x, 0, input_dir.y);
-	var direction = (playerEntity.transform.basis * input_vector).normalized();
-	
-	if direction:
-		playerVelocity.x = direction.x * MOVEMENT_SPEED;
-		playerVelocity.z = direction.z * MOVEMENT_SPEED;
-	else: # Without this, the character will continue to slide in the direction they were moving
-		playerVelocity.x = move_toward(playerVelocity.x, 0, MOVEMENT_SPEED);
-		playerVelocity.z = move_toward(playerVelocity.z, 0, MOVEMENT_SPEED);
-	
-	return playerVelocity;
+func performMovementWalk(playerVelocity: Vector3, delta: float):
+	var input_dir = Input.get_vector("left", "right", "forward", "back")
+	var input_vector = Vector3(input_dir.x, 0, input_dir.y)
+	var target_velocity = Vector3.ZERO
 
-func performMovementLook(delta: int) -> void:
-	# Only rotates mouse if the mouse is captured
+	if input_vector.length() > 0:
+		var direction = (playerEntity.transform.basis * input_vector).normalized()
+		target_velocity = direction * MOVEMENT_SPEED
+	
+	# Smoothly interpolate the player's velocity towards the target velocity
+	playerVelocity.x = move_toward(playerVelocity.x, target_velocity.x, ACCELERATION * delta)
+	playerVelocity.z = move_toward(playerVelocity.z, target_velocity.z, ACCELERATION * delta)
+
+	return playerVelocity
+
+func performMovementLook(delta: float):
+	# Only rotates if the mouse is captured
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
-		print_debug("Mouse is not captured");
-		return ;
-	
-	_mouse_position *= CAMERA_SENSITIVITY;
-	var yaw = _mouse_position.x;
-	var pitch = _mouse_position.y;
-	
-	# Prevents looking up/down too far
-	pitch = clamp(pitch, -90 - _total_pitch, 90 - _total_pitch);
-	_total_pitch += pitch;
-	
-	playerEntity.rotate_object_local(Vector3.UP, deg_to_rad( - yaw));
-	
-	var pitchToRad = deg_to_rad( - pitch);
-	
-	# Rotate the head only up/down
-	playerEntity.head.rotate_x(pitchToRad);
-	
-	# Rotate the hands up/down
-	playerEntity.hands.rotate_x(pitchToRad);
+		print_debug("Mouse is not captured")
+		return
+
+	# Check if there's significant mouse movement
+	if _mouse_position.length_squared() < 0.01: # Adjust the threshold as needed
+		return # No significant movement, so don't rotate
+
+	# Apply sensitivity and delta time to mouse movement
+	var mouse_delta = _mouse_position * CAMERA_SENSITIVITY * delta
+	var yaw = mouse_delta.x
+	var pitch = clamp(mouse_delta.y, -90, 90) # Clamp pitch to prevent over-rotation
+
+	# Update total pitch and clamp
+	_total_pitch = clamp(_total_pitch + pitch, -90, 90)
+
+	# Convert degrees to radians for rotation
+	var yaw_rad = deg_to_rad( - yaw)
+	var pitch_rad = deg_to_rad( - _total_pitch) # Use clamped total pitch for rotation
+
+	# Rotate the player entity for yaw
+	playerEntity.rotate_object_local(Vector3.UP, yaw_rad)
+
+	# Directly set the head and hands pitch rotation to the clamped value
+	playerEntity.head.rotation.x = pitch_rad
+	playerEntity.hands.rotation.x = pitch_rad
+
+	# Reset _mouse_position to prevent continuous movement
+	_mouse_position = Vector2.ZERO
 
 # Will lean left and right (eg. when Q and E are pressed)
-func performMovementLean(delta: int) -> void:
-	var targetLeanAngle: float = getTargetLeanAngle(delta, playerEntity.body.rotation.y);
-	var currentRotationRad = playerEntity.body.rotation.z;
-	var targetRotationRad = deg_to_rad(targetLeanAngle);
-	var newRotation = lerp_angle(targetRotationRad, currentRotationRad, 0.5);
+func performMovementLean(delta: float):
+	var targetLeanAngle: float = getTargetLeanAngle()
+	# Negate the target lean angle to correct the lean direction
+	targetLeanAngle = -targetLeanAngle
+	var currentRotationRad = playerEntity.body.rotation.z
+	var targetRotationRad = deg_to_rad(targetLeanAngle)
 	
-	if (currentRotationRad == targetRotationRad):
-		return ;
+	# Use delta to make the transition smooth and frame rate independent
+	var smoothFactor = 5.0 # Adjust this value to control the speed of the lean
+	var newRotation = lerp_angle(currentRotationRad, targetRotationRad, delta * smoothFactor)
 	
-	if targetLeanAngle < 0:
-		if leaning != LeanDirection.LEFT:
-			#body.rotate_object_local(Vector3.FORWARD, targetLeanAngle);
-			leaning = LeanDirection.LEFT;
-	elif targetLeanAngle > 0:
-		if leaning != LeanDirection.RIGHT:
-			#body.rotate_object_local(Vector3.FORWARD, targetLeanAngle);
-			leaning = LeanDirection.RIGHT;
+	# Update the body's rotation directly
+	playerEntity.body.rotation.z = newRotation
+	
+	# Simplify the update of the leaning direction
+	if targetLeanAngle == 0:
+		leaning = LeanDirection.NONE
+	elif targetLeanAngle < 0:
+		leaning = LeanDirection.LEFT
 	else:
-		if leaning != LeanDirection.NONE:
-			#body.rotation.z = targetLeanAngle;
-			leaning = LeanDirection.NONE;
-	
-	playerEntity.body.rotate_object_local(Vector3.FORWARD, newRotation);
+		leaning = LeanDirection.RIGHT
 
 # Returns the target lean angle in degrees
-func getTargetLeanAngle(delta: int, currentLeanAngle: float) -> float:
+func getTargetLeanAngle():
 	var nonePressed: bool = !(Input.is_action_pressed("lean_left")||Input.is_action_pressed("lean_right"));
 	var bothPressed: bool = (Input.is_action_pressed("lean_left")&&Input.is_action_pressed("lean_right"));
 	
@@ -146,95 +146,46 @@ func getTargetLeanAngle(delta: int, currentLeanAngle: float) -> float:
 	
 	return 0.0;
 
-func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
-	# Reset dash count if on the floor
-	if playerEntity.is_on_floor():
-		dashing = false;
-		dashesUsed = 0;
+func performMovementDash(playerVelocity: Vector3) -> Vector3:
+	resetDashIfOnFloor()
 	
-	if Input.is_action_just_pressed("dash"):
-		dashing = true;
-		dashesUsed += 1;
-		
-		if (dashesUsed > DASH_COUNT):
-			return playerVelocity;
-		
-		# Some rotations we might need to angle the dash
-		var headRotateX = playerEntity.head.rotation.x;
-		var playerRotate = playerEntity.rotation.y
-		
-		var vectorDash = getMovementVector();
-		
-		# Create a vector to represent the dash movement
-		vectorDash = vectorDash.rotated(Vector3.UP, playerRotate);
-		# vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX);
-		vectorDash = vectorDash.normalized();
-		vectorDash *= DASH_FORCE;
-		vectorDash.y = vectorDash.y / 5;
-		
-		print_debug("Dash direction: ", vectorDash);
-		playerVelocity += vectorDash;
+	if not Input.is_action_just_pressed("dash"):
+		return playerVelocity
 	
-	return playerVelocity;
+	if dashesUsed >= DASH_COUNT:
+		return playerVelocity
+	
+	dashing = true
+	dashesUsed += 1
+	
+	var vectorDash = calculateDashVector()
+	print_debug("Dash direction: ", vectorDash)
+	playerVelocity += vectorDash
+	
+	return playerVelocity
 
-# Slide if on ground. Ground pound if in air.
-# TODO: This works but needs tidying up because the logic sucks :). There's probably a better way to do the slide/rotate animations
-func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
-	if sliding:
-		# print_debug("Slide timer: ", slideTimer);
-		if slideTimer < SLIDE_DURATION:
-			var currentRotationRad = playerEntity.body.rotation.x;
-			var targetRotationRad = deg_to_rad(SLIDE_ANGLE);
-			
-			if currentRotationRad != targetRotationRad:
-				var halfSlideDuration = (SLIDE_DURATION / 2);
-				var lerpProgress = 0.0;
-				
-				# For the first half of the dash, rotate to a sliding position
-				if slideTimer <= halfSlideDuration:
-					lerpProgress = (slideTimer / halfSlideDuration);
-				else:
-					targetRotationRad = 0.0;
-					var slideTimerForHalf = (slideTimer - halfSlideDuration);
-					lerpProgress = slideTimerForHalf / halfSlideDuration;
-				
-				var newRotation = lerp_angle(currentRotationRad, targetRotationRad, lerpProgress);
-				var rotationDiff = currentRotationRad - newRotation;
-				playerEntity.body.rotation.x = newRotation;
-				playerEntity.head.rotation.x += rotationDiff;
-			
-			slideTimer += delta
-			
-			# Defines the direction the slide should push the player in
-			var vectorSlide = Vector3(0, 0, -1);
-			var playerRotation = playerEntity.rotation.y;
-			vectorSlide = vectorSlide.rotated(Vector3.UP, playerRotation);
-			
-			# Add the slide force to the slide vector
-			vectorSlide *= SLIDE_FORCE;
-			
-			playerVelocity += vectorSlide;
-		else:
-			print_debug("Slide ending");
-			sliding = false;
-			slideTimer = 0.0;
-			
-			var currentRotationRad = playerEntity.body.rotation.x;
-			#body.rotation.x = 0;
-			#head.rotation.x = 0;
-		
-		return playerVelocity;
-	
-	if Input.is_action_just_pressed("slide"):
-		# Cannot slide in the air
-		if !playerEntity.is_on_floor():
-			print_debug("Cannot slide in the air");
-			return playerVelocity;
-		
-		print_debug("Started sliding");
-		sliding = true;
-	
-	return playerVelocity;
+func resetDashIfOnFloor():
+	if playerEntity.is_on_floor():
+		dashing = false
+		dashesUsed = 0
+
+func calculateDashVector():
+	var playerRotate = playerEntity.rotation.y
+	var vectorDash = getMovementVector().rotated(Vector3.UP, playerRotate)
+
+	# Uncomment the following if I decide to rotate the dash vector based on the player's head rotation instead of the player's rotation
+	# var headRotateX = playerEntity.head.rotation.x
+	# vectorDash = vectorDash.rotated(Vector3(1, 0, 0), -headRotateX)
+
+	vectorDash = vectorDash.normalized() * DASH_FORCE
+	vectorDash.y /= DASH_Y_REDUCTION_FACTOR
+	return vectorDash
+
+
+func _process(delta):
+	# Existing code for jump press and transitioning
+	if lastJumpPress >= 0:
+		lastJumpPress += delta
 
 func getMovementVector() -> Vector3:
 	# All translation references we might need
@@ -247,8 +198,8 @@ func processMovement(delta) -> void:
 		return ;
 	playerEntity.velocity = performMovementJump(playerEntity.velocity, delta, GRAVITY, JUMP_SPEED);
 	playerEntity.velocity = performMovementWalk(playerEntity.velocity, delta);
-	playerEntity.velocity = performMovementDash(playerEntity.velocity, delta);
-	playerEntity.velocity = performMovementSlide(playerEntity.velocity, delta);
+	playerEntity.velocity = performMovementDash(playerEntity.velocity);
+	# playerEntity.velocity = performMovementSlide(playerEntity.velocity, delta); # TODO: Re-add slide mechanic later when I am ready to implement it properly
 	performMovementLook(delta);
 	performMovementLean(delta);
 	
