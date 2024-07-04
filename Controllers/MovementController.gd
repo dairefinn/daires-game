@@ -16,6 +16,16 @@ class_name MovementController;
 @export var SLIDE_DURATION: float = 1.0;
 @export var SLIDE_ANGLE: float = 60.0;
 
+# Constants for impulse strength
+const PUSH_IMPULSE_STRENGTH = 0.3
+const PUSH_IMPULSE_OFFSET_STRENGTH = 0.01
+
+# Constants for input actions
+const MOVE_FORWARD = "forward"
+const MOVE_BACK = "back"
+const MOVE_RIGHT = "right"
+const MOVE_LEFT = "left"
+
 enum LeanDirection {LEFT, RIGHT, NONE};
 var leaning: LeanDirection = LeanDirection.NONE;
 
@@ -146,7 +156,7 @@ func getTargetLeanAngle():
 	
 	return 0.0;
 
-func performMovementDash(playerVelocity: Vector3) -> Vector3:
+func performMovementDash(playerVelocity: Vector3):
 	resetDashIfOnFloor()
 	
 	if not Input.is_action_just_pressed("dash"):
@@ -187,29 +197,40 @@ func _process(delta):
 	if lastJumpPress >= 0:
 		lastJumpPress += delta
 
-func getMovementVector() -> Vector3:
-	# All translation references we might need
-	var move_z = Input.get_action_strength("back") - Input.get_action_strength("forward");
-	var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
-	return Vector3(move_x, 0, move_z);
-
-func processMovement(delta) -> void:
-	if (playerEntity == null):
-		return ;
-	playerEntity.velocity = performMovementJump(playerEntity.velocity, delta, GRAVITY, JUMP_SPEED);
-	playerEntity.velocity = performMovementWalk(playerEntity.velocity, delta);
-	playerEntity.velocity = performMovementDash(playerEntity.velocity);
-	# playerEntity.velocity = performMovementSlide(playerEntity.velocity, delta); # TODO: Re-add slide mechanic later when I am ready to implement it properly
-	performMovementLook(delta);
-	performMovementLean(delta);
+func getMovementVector():
+	# Calculate movement direction based on input strength
+	var move_z = Input.get_action_strength(MOVE_BACK) - Input.get_action_strength(MOVE_FORWARD)
+	var move_x = Input.get_action_strength(MOVE_RIGHT) - Input.get_action_strength(MOVE_LEFT)
+	var movement_vector = Vector3(move_x, 0, move_z)
+		
+	# Normalize the vector to ensure consistent movement speed in all directions.
+	# This is particularly important when moving diagonally (e.g., pressing forward and right simultaneously),
+	# as it prevents faster movement compared to moving in a straight line.
+	if movement_vector.length() > 0:
+		movement_vector = movement_vector.normalized()
 	
-	playerEntity.move_and_slide();
-	processCollisions();
+	return movement_vector
 
-# Makes it so that you can push objects around
-func processCollisions() -> void:
-	for col_idx in playerEntity.get_slide_collision_count():
-		var col = playerEntity.get_slide_collision(col_idx)
-		if col.get_collider() is RigidBody3D:
-			col.get_collider().apply_central_impulse( - col.get_normal() * 0.3)
-			col.get_collider().apply_impulse( - col.get_normal() * 0.01, col.get_position());
+func processMovement(delta):
+	if not is_instance_valid(playerEntity):
+		return
+
+	playerEntity.velocity = performMovementJump(playerEntity.velocity, delta, GRAVITY, JUMP_SPEED)
+	playerEntity.velocity = performMovementWalk(playerEntity.velocity, delta)
+	playerEntity.velocity = performMovementDash(playerEntity.velocity)
+
+	performMovementLook(delta)
+	performMovementLean(delta)
+	
+	# Assuming Vector3.UP is the floor_normal for better slope handling
+	playerEntity.move_and_slide()
+	processCollisions()
+
+func processCollisions():
+	for col_idx in range(playerEntity.get_slide_collision_count()):
+		var collision = playerEntity.get_slide_collision(col_idx)
+		var collider = collision.get_collider()
+		if collider and collider is RigidBody3D:
+			var impulse_direction = -collision.get_normal()
+			collider.apply_central_impulse(impulse_direction * PUSH_IMPULSE_STRENGTH)
+			collider.apply_impulse(impulse_direction * PUSH_IMPULSE_OFFSET_STRENGTH, collision.get_position())
