@@ -9,6 +9,7 @@ class_name Player
 @onready var camera = $Body/Head/Camera3D;
 @onready var cameraRay = $Body/Head/Camera3D/RayCast3D;
 
+@onready var hands = $Body/Hands;
 @onready var handLeft = $Body/Hands/HandLeft;
 @onready var handRight = $Body/Hands/HandRight;
 
@@ -56,3 +57,7 @@ func markItemAsHighlighted() -> void:
 	print_debug("First object colliding with: " + collidingWith.name);
 	if collidingWith is ItemEquipable:
 		highlighted = collidingWith;
+
+
+func setVehicle(vehicle: Vehicle) -> void:
+	movementController.setVehicle(vehicle);

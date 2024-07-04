@@ -40,11 +40,15 @@ func spawnBullet(_bulletEmitter: Node3D) -> void:
 	
 	var newBullet = resourceBullet.instantiate();
 	Globals.add_projectile.emit(newBullet);
+	
+	print_debug("Bullet emitter rotation:")
+	print_debug(_bulletEmitter.global_rotation)
+	
 	newBullet.global_position = _bulletEmitter.global_position;
 	newBullet.global_rotation = _bulletEmitter.global_rotation;
-	
-	var bulletRotate = newBullet.rotation.y
-	newBullet.linear_velocity = Vector3(0, 0, -50).rotated(Vector3.UP, bulletRotate);
+	newBullet.gravity_scale = 0;
+	# TODO: Apply a forward force once the rotation is set corrrectly
+	#newBullet.linear_velocity.z = -1;
 	
 	ammoLeft -= 1;
 

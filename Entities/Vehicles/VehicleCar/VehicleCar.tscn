@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://dghby3p7p0kaa"]
+
+[ext_resource type="Script" path="res://Entities/Vehicles/VehicleCar/VehicleCar.gd" id="1_qh50g"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yl1o7"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ij5ry"]
+size = Vector3(2, 1.5, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7nyrj"]
+size = Vector3(2, 1, 4)
+
+[node name="VehicleCar" type="RigidBody3D"]
+script = ExtResource("1_qh50g")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_yl1o7")
+
+[node name="Cabin" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("BoxMesh_ij5ry")
+
+[node name="Body" type="MeshInstance3D" parent="CollisionShape3D"]
+mesh = SubResource("BoxMesh_7nyrj")

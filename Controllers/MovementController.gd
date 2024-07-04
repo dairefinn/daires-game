@@ -1,7 +1,6 @@
 extends Node
 class_name MovementController;
 
-
 @export var playerEntity: Player = null;
 
 @export var GRAVITY: int = ProjectSettings.get_setting("physics/3d/default_gravity");
@@ -16,7 +15,7 @@ class_name MovementController;
 @export var SLIDE_DURATION: float = 1.0;
 @export var SLIDE_ANGLE: float = 60.0;
 
-enum LeanDirection { LEFT, RIGHT, NONE };
+enum LeanDirection {LEFT, RIGHT, NONE};
 var leaning: LeanDirection = LeanDirection.NONE;
 
 var dashing: bool = false;
@@ -28,12 +27,18 @@ var slideTimer: float = 0.0;
 var _mouse_position = Vector2(0, 0);
 var _total_pitch = 0.0;
 
+const JUMP_BUFFER_TIME = 0.1 # Time in seconds
+var lastJumpPress = -1.0 # Time since the last jump press, initialized to an invalid value
 
 func _init():
 	# Capture the mouse inside of the window while controlling the camera
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED);
 	print_debug("Capturing mouse")
 
+func _process(delta):
+	# Update the last jump press timer if it's valid
+	if lastJumpPress >= 0:
+		lastJumpPress += delta
 
 func process_input(event: InputEvent) -> void:
 	# Receives mouse motion
@@ -41,21 +46,23 @@ func process_input(event: InputEvent) -> void:
 		_mouse_position = event.relative;
 		# print_debug("Mouse X: ", _mouse_position.x, " | Mouse Y: ", _mouse_position.y);
 
-
 # Will either apply gravity or jump if applicable
 func performMovementJump(playerVelocity: Vector3, delta: float, gravity: float, jumpSpeed: float) -> Vector3:
-	# Apply gravity to the player as long as they're in the air
-	if not playerEntity.is_on_floor():
-		playerVelocity.y -= gravity * delta;
-		return playerVelocity;
-	
-	# If jump was pressed jump into the air
+	# Update jump press if jump action is just pressed
 	if Input.is_action_just_pressed("jump"):
-		playerVelocity.y = jumpSpeed;
-		return playerVelocity;
-	
-	return playerVelocity;
+		lastJumpPress = 0
 
+	# Apply gravity
+	if not playerEntity.is_on_floor() or lastJumpPress >= 0:
+		playerVelocity.y -= gravity * delta
+
+	# Check for jump condition: on the floor and jump was pressed recently
+	if playerEntity.is_on_floor() and lastJumpPress >= 0 and lastJumpPress < JUMP_BUFFER_TIME:
+		playerVelocity.y = jumpSpeed
+		# Reset the jump press timer
+		lastJumpPress = -1
+
+	return playerVelocity
 
 # Will move laterally if an appropriate input is pressed
 func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
@@ -73,12 +80,11 @@ func performMovementWalk(playerVelocity: Vector3, delta: int) -> Vector3:
 	
 	return playerVelocity;
 
-
 func performMovementLook(delta: int) -> void:
 	# Only rotates mouse if the mouse is captured
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
 		print_debug("Mouse is not captured");
-		return;
+		return ;
 	
 	_mouse_position *= CAMERA_SENSITIVITY;
 	var yaw = _mouse_position.x;
@@ -88,11 +94,15 @@ func performMovementLook(delta: int) -> void:
 	pitch = clamp(pitch, -90 - _total_pitch, 90 - _total_pitch);
 	_total_pitch += pitch;
 	
-	playerEntity.rotate_object_local(Vector3.UP, deg_to_rad(-yaw));
+	playerEntity.rotate_object_local(Vector3.UP, deg_to_rad( - yaw));
+	
+	var pitchToRad = deg_to_rad( - pitch);
 	
 	# Rotate the head only up/down
-	playerEntity.head.rotate_x(deg_to_rad(-pitch));
-
+	playerEntity.head.rotate_x(pitchToRad);
+	
+	# Rotate the hands up/down
+	playerEntity.hands.rotate_x(pitchToRad);
 
 # Will lean left and right (eg. when Q and E are pressed)
 func performMovementLean(delta: int) -> void:
@@ -102,7 +112,7 @@ func performMovementLean(delta: int) -> void:
 	var newRotation = lerp_angle(targetRotationRad, currentRotationRad, 0.5);
 	
 	if (currentRotationRad == targetRotationRad):
-		return;
+		return ;
 	
 	if targetLeanAngle < 0:
 		if leaning != LeanDirection.LEFT:
@@ -119,24 +129,22 @@ func performMovementLean(delta: int) -> void:
 	
 	playerEntity.body.rotate_object_local(Vector3.FORWARD, newRotation);
 
-
 # Returns the target lean angle in degrees
 func getTargetLeanAngle(delta: int, currentLeanAngle: float) -> float:
-	var nonePressed: bool = !(Input.is_action_pressed("lean_left") || Input.is_action_pressed("lean_right"));
-	var bothPressed: bool = (Input.is_action_pressed("lean_left") && Input.is_action_pressed("lean_right"));
+	var nonePressed: bool = !(Input.is_action_pressed("lean_left")||Input.is_action_pressed("lean_right"));
+	var bothPressed: bool = (Input.is_action_pressed("lean_left")&&Input.is_action_pressed("lean_right"));
 	
 	# No lean if none are pressed or both are pressed
-	if nonePressed || bothPressed:
+	if nonePressed||bothPressed:
 		return 0.0;
 	
 	if Input.is_action_pressed("lean_left"):
-		return -LEAN_ANGLE;
+		return - LEAN_ANGLE;
 	
 	if Input.is_action_pressed("lean_right"):
 		return LEAN_ANGLE;
 	
 	return 0.0;
-
 
 func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 	# Reset dash count if on the floor
@@ -168,7 +176,6 @@ func performMovementDash(playerVelocity: Vector3, delta: float) -> Vector3:
 		playerVelocity += vectorDash;
 	
 	return playerVelocity;
-
 
 # Slide if on ground. Ground pound if in air.
 # TODO: This works but needs tidying up because the logic sucks :). There's probably a better way to do the slide/rotate animations
@@ -229,17 +236,15 @@ func performMovementSlide(playerVelocity: Vector3, delta: float) -> Vector3:
 	
 	return playerVelocity;
 
-
 func getMovementVector() -> Vector3:
 	# All translation references we might need
 	var move_z = Input.get_action_strength("back") - Input.get_action_strength("forward");
 	var move_x = Input.get_action_strength("right") - Input.get_action_strength("left");
 	return Vector3(move_x, 0, move_z);
 
-
 func processMovement(delta) -> void:
 	if (playerEntity == null):
-		return;
+		return ;
 	playerEntity.velocity = performMovementJump(playerEntity.velocity, delta, GRAVITY, JUMP_SPEED);
 	playerEntity.velocity = performMovementWalk(playerEntity.velocity, delta);
 	playerEntity.velocity = performMovementDash(playerEntity.velocity, delta);
@@ -250,11 +255,10 @@ func processMovement(delta) -> void:
 	playerEntity.move_and_slide();
 	processCollisions();
 
-
 # Makes it so that you can push objects around
 func processCollisions() -> void:
 	for col_idx in playerEntity.get_slide_collision_count():
 		var col = playerEntity.get_slide_collision(col_idx)
 		if col.get_collider() is RigidBody3D:
-			col.get_collider().apply_central_impulse(-col.get_normal() * 0.3)
-			col.get_collider().apply_impulse(-col.get_normal() * 0.01, col.get_position());
+			col.get_collider().apply_central_impulse( - col.get_normal() * 0.3)
+			col.get_collider().apply_impulse( - col.get_normal() * 0.01, col.get_position());
