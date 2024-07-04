@@ -1,14 +1,14 @@
 extends Area3D
 
+const BOUNCE_VELOCITY = 8 # Descriptive constant for bounce velocity
 
-func _on_body_entered(body: Node):#
-	if body.has_method("bounce"):
-		print_debug("Body has bounce method");
-	
-	if body is Player:
-		if body.is_on_floor():
-			# TODO: Where tf did jump speed come from previously?
-			# body.velocity.y += (body.movementController.jumpSpeed * 4);
-			body.velocity.y += 8;
-	elif body is Item:
-		body.linear_velocity.y += 8;
+func _on_body_entered(body: Node):
+	var bounce_velocity = Vector3(0, BOUNCE_VELOCITY, 0)
+	# Attempt to apply bounce effect based on the property type
+	if body is Player or body is Item:
+		if body.has_method("set_velocity"):
+			# If the body has a 'set_velocity' method, use it to apply the bounce effect
+			body.set_velocity(body.get_velocity() + bounce_velocity)
+		elif body.has_method("set_linear_velocity"):
+			# If the body has a 'set_linear_velocity' method, use it to apply the bounce effect
+			body.set_linear_velocity(body.get_linear_velocity() + bounce_velocity)

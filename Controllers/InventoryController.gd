@@ -26,13 +26,10 @@ func performActionInteract() -> void:
 	if !Input.is_action_just_pressed("interact"):
 		return;
 	
-	print_debug("Interact was pressed")
-	
 	if !playerEntity.cameraRay.is_colliding():
 		return;
 	
 	var collidingWith: Object = playerEntity.cameraRay.get_collider();
-	print_debug("First object colliding with: " + collidingWith.name);
 	
 	if collidingWith is ItemPickupable:
 		tryEquipItem(collidingWith);
