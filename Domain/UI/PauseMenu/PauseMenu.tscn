@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3 uid="uid://qlaer2kp4qc3"]
+
+[ext_resource type="Script" path="res://Domain/UI/PauseMenu/PauseMenu.gd" id="1_h1o0c"]
+[ext_resource type="Theme" uid="uid://dj2dn1nyev72r" path="res://Domain/UI/MenuTheme.tres" id="1_onu5c"]
+[ext_resource type="StyleBox" uid="uid://byf6543t0v3yn" path="res://Domain/UI/StyleBoxCustom.tres" id="2_flxcn"]
+
+[node name="PauseMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_h1o0c")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+clip_contents = true
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_onu5c")
+theme_override_styles/panel = ExtResource("2_flxcn")
+
+[node name="Label" type="Label" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Daire's game"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_onu5c")
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ButtonResume" type="Button" parent="PanelContainer/VBoxContainer"]
+process_mode = 3
+layout_mode = 2
+size_flags_vertical = 4
+text = "Resume
+"
+
+[node name="ButtonQuit" type="Button" parent="PanelContainer/VBoxContainer"]
+process_mode = 3
+layout_mode = 2
+size_flags_vertical = 4
+text = "Quit"
+
+[connection signal="pressed" from="PanelContainer/VBoxContainer/ButtonResume" to="." method="_on_button_resume_pressed"]
+[connection signal="pressed" from="PanelContainer/VBoxContainer/ButtonQuit" to="." method="_on_button_quit_pressed"]

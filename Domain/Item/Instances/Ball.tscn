@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmn6xi1naexio"]
+
+[ext_resource type="Script" path="res://Domain/Item/ItemPickupable.gd" id="1_vu0g0"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_6wub7"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_sefs5"]
+
+[node name="Ball" type="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.006, 0)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_vu0g0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.500819, 0.494401, 0.500375)
+shape = SubResource("SphereShape3D_6wub7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.500819, 0.494401, 0.500375)
+mesh = SubResource("SphereMesh_sefs5")
+skeleton = NodePath("")

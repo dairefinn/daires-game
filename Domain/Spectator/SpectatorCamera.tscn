@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://4bf0spl3barx"]
+
+[ext_resource type="Script" path="res://Domain/Spectator/FreeLook.gd" id="1_dxca8"]
+
+[node name="SpectatorCamera" type="Camera3D"]
+script = ExtResource("1_dxca8")

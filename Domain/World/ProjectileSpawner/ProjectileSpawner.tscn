@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy33g6acugjl3"]
+
+[ext_resource type="Script" path="res://Domain/World/ProjectileSpawner/ProjectileSpawner.gd" id="1_cj13p"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ki3ha"]
+size = Vector3(0.05, 0.05, 0.05)
+
+[node name="ProjectileSpawnerMain" type="Node3D"]
+script = ExtResource("1_cj13p")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_ki3ha")

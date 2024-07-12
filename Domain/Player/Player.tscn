@@ -1,0 +1,56 @@
+[gd_scene load_steps=7 format=3 uid="uid://yru61rreocyh"]
+
+[ext_resource type="Script" path="res://Domain/Player/Scripts/Player.gd" id="1_kejjt"]
+[ext_resource type="Material" uid="uid://bjhrchfqdwbwn" path="res://Materials/Visual/Player.tres" id="2_ddx0s"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_nwm3c"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ba811"]
+material = ExtResource("2_ddx0s")
+radius = 0.33
+
+[sub_resource type="SphereMesh" id="SphereMesh_77gw6"]
+material = ExtResource("2_ddx0s")
+
+[sub_resource type="BoxMesh" id="BoxMesh_8m7lh"]
+size = Vector3(0.15, 0.15, 0.15)
+
+[node name="PlayerBody" type="CharacterBody3D"]
+script = ExtResource("1_kejjt")
+
+[node name="Hitbox" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, 2.08165e-12)
+shape = SubResource("CapsuleShape3D_nwm3c")
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, 2.08165e-12)
+mesh = SubResource("CapsuleMesh_ba811")
+
+[node name="Head" type="MeshInstance3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.60209e-18, 1.5, -2.60209e-18)
+mesh = SubResource("SphereMesh_77gw6")
+skeleton = NodePath("../..")
+
+[node name="Camera3D" type="Camera3D" parent="Body/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 2.08165e-12)
+current = true
+fov = 90.0
+
+[node name="RayCast3D" type="RayCast3D" parent="Body/Head/Camera3D"]
+target_position = Vector3(0, 0, -5)
+collision_mask = 2
+
+[node name="Hands" type="Node3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, -0.5)
+
+[node name="HandRight" type="MeshInstance3D" parent="Body/Hands"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 2.08165e-12, 2.08165e-12)
+transparency = 1.0
+mesh = SubResource("BoxMesh_8m7lh")
+skeleton = NodePath("../../Head/Camera3D")
+
+[node name="HandLeft" type="MeshInstance3D" parent="Body/Hands"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 2.08165e-12, 2.08165e-12)
+transparency = 1.0
+mesh = SubResource("BoxMesh_8m7lh")
+skeleton = NodePath("../../Head/Camera3D")

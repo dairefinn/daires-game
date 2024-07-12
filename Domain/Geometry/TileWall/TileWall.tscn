@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://cyl58y3cnmlfn"]
+
+[ext_resource type="PhysicsMaterial" uid="uid://bd31eoo3dpy3v" path="res://Materials/Physics/Concrete.tres" id="1_v0akl"]
+[ext_resource type="Material" uid="uid://cjcv073l0b771" path="res://Materials/Visual/World.tres" id="2_1qh22"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ul13f"]
+size = Vector3(2, 2, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rff2u"]
+material = ExtResource("2_1qh22")
+size = Vector3(2, 2, 0.1)
+
+[node name="TileWall" type="StaticBody3D"]
+physics_material_override = ExtResource("1_v0akl")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, 2.08165e-12)
+shape = SubResource("BoxShape3D_ul13f")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 1, 2.08165e-12)
+mesh = SubResource("BoxMesh_rff2u")
